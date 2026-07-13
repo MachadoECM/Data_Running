@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everson Cardozo Machado — Data × Running</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=32">
+<link href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div id="pageLoadBar" class="pageLoadBar"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="headrow">
+      <div class="brandBlock">
+        <div class="brand">Everson Cardozo Machado</div>
+        <div class="brandSubtitle">Data Scientist • Marathon Runner</div>
+      </div>
+      <div class="headRight">
+        <div class="headmeta"><span class="live-dot" id="liveDot"></span><span id="liveLabel">loading Strava…</span></div>
+        <a href="ml.html" class="navLink">Model Lab</a>
+        <button class="themeToggle" id="themeToggle" aria-label="Toggle light/dark theme">dark mode</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="jumpNav">
+    <a href="#about">About</a>
+    <a href="#records">Records</a>
+    <a href="#predictor">Predictor</a>
+    <a href="#geography">Geography</a>
+    <a href="#stats">Stats</a>
+    <a href="#recent">Recent</a>
+    <a href="#progression">Progression</a>
+  </nav>
+
+  <section class="hero" id="about">
+    <h1>Data <em>×</em> Running</h1>
+    <p class="heroLead">Running is consistency and discipline — every session is another data point in that story.</p>
+    <p>Every runner generates data. My goal is to transform that data into knowledge.</p>
+    <p>Data × Running is where software engineering, predictive modeling, and machine learning come together to better understand performance, training, and long-term progression.</p>
+
+    <div class="heroStats" id="heroStats">
+      <div class="stat"><div class="k" data-stat="lifetimeKm">—</div><div class="l">km run, all-time</div></div>
+      <div class="stat"><div class="k" data-stat="lifetimeCount">—</div><div class="l">runs logged</div></div>
+      <div class="stat"><div class="k" data-stat="lifetimeHours">—</div><div class="l">hours moving</div></div>
+      <div class="stat"><div class="k" data-stat="ytdKm">—</div><div class="l">km in 2026</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle">Weekly volume (km)</div>
+      <div class="sectionNote" id="volNote">last 8 weeks</div>
+    </div>
+    <div class="volChart" id="volChart"></div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle" id="records">Personal records</div>
+    </div>
+    <div class="prRow" id="prRow"></div>
+    <div class="prStatsWrap" id="prStatsWrap" style="display:none;">
+      <div class="prStatsHead">
+        <div class="prStatsEvent" id="prStatsEvent"></div>
+        <div class="prStatsMeta" id="prStatsMeta"></div>
+      </div>
+      <div class="prRow" id="prStatsRow"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle" id="predictor">Race Time Predictor <span class="mlTag">Predictive Model</span></div>
+      <div class="sectionNote">results only — <a href="ml.html#race-time-predictor" class="mlInlineLink">see how this works →</a></div>
+    </div>
+    <div class="prRow" id="racePredRow"></div>
+    <p class="progNote" id="racePredNote"></p>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle">Runs by day of week</div>
+      <div class="sectionNote">activity count per day · full history</div>
+    </div>
+    <div class="volChart" id="weekdayChart"></div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle">Other stats</div>
+      <div class="sectionNote">full history</div>
+    </div>
+    <div class="prRow" id="statsRow"></div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle" id="geography">Top 5 cities I've run in</div>
+      <div class="sectionNote">full history</div>
+    </div>
+    <div class="mapSplit">
+      <div id="topCityMap"><div class="mapNote">Looking up locations (can take ~11s the first time each day — cached after that)…</div></div>
+      <div class="mapLocations">
+        <div class="panelTitle">Ranked by accumulated km</div>
+        <div id="topCitiesList" class="shoeList"><div class="mapNote">loading…</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle" id="stats">Running stats</div>
+      <div class="sectionNote">measured, not estimated</div>
+    </div>
+    <div class="panelGrid">
+      <div class="panel">
+        <div class="panelTitle">Annual distance (km)</div>
+        <div id="chartAnnual"></div>
+        <div class="panelFootnote">I started running just once a week in May 2022 — short, easy runs, mostly to clear my head, not real training.</div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Activity by time of day</div>
+        <div id="chartHour"></div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Average distance by day</div>
+        <div id="chartWeekdayRadar"></div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Distance distribution</div>
+        <div id="chartDistDist"></div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Pace zones</div>
+        <div id="chartPaceZones"></div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Pace distribution</div>
+        <div id="chartPace"></div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Heart rate zones</div>
+        <div id="chartHr"></div>
+        <div class="zoneLegend" id="zoneLegend"></div>
+        <div class="panelFootnote">Note: the top of the Max zone isn't a fixed ceiling — it reflects the highest heart rate observed in my own data, and can shift over time.</div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Most-trained zones (time)</div>
+        <div class="zoneTimeList" id="chartZoneTime"></div>
+      </div>
+      <div class="panel">
+        <div class="panelTitle">Running vs strength vs workout, by year</div>
+        <div id="chartRunVsStrength"></div>
+        <div class="zoneLegend">
+          <span><i style="background:var(--accent)"></i>Running</span>
+          <span><i style="background:var(--navy)"></i>Strength</span>
+          <span><i style="background:#C97C3D"></i>Workout</span>
+        </div>
+        <div class="panelFootnote">I barely used Strava in 2019 and 2020 — those two years don't reflect how much I actually trained, just what I happened to log.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle">Shoe rotation</div>
+      <div class="sectionNote">active · accumulated km</div>
+    </div>
+    <label class="toggleRow"><input type="checkbox" id="showInactiveShoes"> show retired shoes</label>
+    <div class="shoeList" id="shoeList"></div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle" id="recent">Recent activities</div>
+      <div class="sectionNote">all activity types · live via Strava</div>
+    </div>
+    <div class="periodTabs" id="periodTabs">
+      <button data-period="7d" class="active">7 days</button>
+      <button data-period="lastWeek">Last week</button>
+      <button data-period="month">This month</button>
+      <button data-period="year">Year to date</button>
+    </div>
+    <div class="activitySplit">
+      <div class="activityTableWrap">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Workout</th><th>Type</th><th>Distance</th><th>Time</th><th>Avg pace</th></tr>
+          </thead>
+          <tbody id="activityRows">
+            <tr><td colspan="6" class="loading">loading activities…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="activityPieWrap">
+        <div class="panelTitle">By type, this period</div>
+        <div id="chartActivityPie"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle">Summary by activity type</div>
+      <div class="sectionNote">full history</div>
+    </div>
+    <div class="shoeList" id="sportList"></div>
+  </section>
+
+  <section>
+    <div class="sectionHead">
+      <div class="sectionTitle" id="progression">Progression</div>
+      <div class="sectionNote">every day, all activity types</div>
+    </div>
+    <p class="progNote">I started logging activity on Strava in mid-October 2020 — days before that show as rest simply because there's no record, not because I wasn't training.</p>
+    <div id="progressionList"></div>
+  </section>
+
+  <section class="followSection">
+    <div class="eyebrow" style="text-align:center;">Follow</div>
+    <div id="qrCode" class="qrWrap"></div>
+
+    <div class="socialRow">
+      <a href="https://strava.app.link/XaJw3ei7u4b" target="_blank" aria-label="Strava" class="socialIcon" style="background:#FC4C02;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+      </a>
+      <a href="https://www.instagram.com/eversoncardozo?igsh=c29rZW1sZ2xlb2Jq&utm_source=qr" target="_blank" aria-label="Instagram" class="socialIcon" style="background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/eversoncardozomachado/" target="_blank" aria-label="LinkedIn" class="socialIcon" style="background:#0A66C2;">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>Live data via <a href="https://www.strava.com" target="_blank">Strava</a>. See this project's <code>README.md</code> to set up your own API key and deploy.</p>
+  </footer>
+
+</div>
+
+<script src="theme.js?v=7"></script>
+<script src="app.js?v=23"></script>
+</body>
+</html>

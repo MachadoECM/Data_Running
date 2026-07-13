@@ -1,0 +1,11 @@
+{
+  "_comment": "Tênis aposentados — a API pública do Strava (GET /athlete) só devolve o calçado ATIVO no campo shoes, não expõe os retirados. Copiado da tela 'Your Gear > Retired Shoes' do app em 2026-07-04. Atualize manualmente quando aposentar um par novo.",
+  "shoes": [
+    { "name": "Adidas Adizero Boston 12 Azul", "km": 946 },
+    { "name": "ASICS NovaBlast 3", "km": 908 },
+    { "name": "New Balance 1080 v11", "km": 659 },
+    { "name": "New Balance 1080 v13", "km": 835 },
+    { "name": "New Balance rebel v4", "km": 502 },
+    { "name": "Olympikus corre 3", "km": 666 }
+  ]
+}

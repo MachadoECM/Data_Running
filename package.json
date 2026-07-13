@@ -1,0 +1,12 @@
+{
+  "name": "split-strava-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dashboard pessoal de corrida alimentado pela API do Strava.",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

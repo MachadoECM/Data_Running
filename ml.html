@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Lab — Everson Cardozo Machado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="headrow">
+      <div class="brand">Everson Cardozo Machado</div>
+      <div class="headRight">
+        <a href="index.html" class="navLink">← Dashboard</a>
+        <button class="themeToggle" id="themeToggle" aria-label="Toggle light/dark theme">dark mode</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Model Lab</div>
+    <h1 class="mlHeroTitle">The dashboard looks backward. The Model Lab looks <em>forward</em>.</h1>
+    <p>Here I document the predictive models, assumptions, and engineering decisions used to transform historical running data into future performance estimates.</p>
+  </section>
+
+  <section id="race-time-predictor">
+    <div class="sectionHead">
+      <div class="sectionTitle">Race Time Predictor <span class="mlTag">Predictive Model</span></div>
+      <div class="sectionNote">log-log linear regression</div>
+    </div>
+    <div class="eyebrow" style="margin-bottom:6px;">🎯 Predicting Future Performance</div>
+    <p class="mlExplain">Estimate race times based on historical training patterns.</p>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Problem</div>
+      <p class="mlExplain">There's no built-in way to answer "what could I realistically run for a half marathon right now?" from raw training data. Runners either guess, or reach for a generic calculator that assumes everyone fatigues over distance in exactly the same way.</p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Why is it difficult?</div>
+      <p class="mlExplain">Race performance depends on far more than fitness alone — recovery, sleep, nutrition, weather, and race-day pacing all move the result, and none of them show up in a training log. On top of that, the standard shortcut (the Riegel formula) hard-codes a single fatigue exponent for every runner, ignoring that aerobic base and pacing discipline vary a lot between athletes. And naively fitting a curve through every distance I've ever run — including sprints — mixes two different physiological systems: 400m/1K performance is dominated by anaerobic capacity, while 10K-and-up is governed by aerobic endurance. Blending them skews the curve toward unrealistically fast predictions at longer distances.</p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Why This Model?</div>
+      <p class="mlExplain">Traditional race prediction calculators assume that every runner slows down at the same rate as race distance increases. While this provides a useful baseline, it overlooks individual differences in endurance, training history, and current fitness. I built this model to estimate those relationships from my own running data, producing predictions that better reflect my personal performance profile rather than relying on population-wide assumptions.</p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">My Approach</div>
+      <p class="mlExplain">Instead of borrowing someone else's fatigue exponent, I fit my own — using only endurance-range PRs (5K through marathon) so sprint physiology doesn't contaminate the curve. I then layer two corrections on top: a <strong>current fitness adjustment</strong> comparing my last 45 days of training pace to my all-time average, and a <strong>reality margin</strong> that grows with distance, because the raw curve is fit directly through PR times — best-case outcomes by definition — and presenting a best-case outcome as the expected one would be overly optimistic for an amateur runner without professional-level recovery support.</p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Model</div>
+      <div class="mlModelTags">
+        <span>Personalized Riegel Formula</span><span>Log-Log Regression</span><span>Current Fitness Adjustment</span>
+      </div>
+      <p class="mlExplain">The classic Riegel formula is <code>T2 = T1 × (D2/D1)^b</code>, with <code>b</code> fixed at ~1.06 for everyone. I fit my own <code>b</code> via ordinary least-squares regression on <code>log(time)</code> vs. <code>log(distance)</code> — the power-law relationship <code>time = a·distance^b</code> becomes linear once both sides are log-transformed, so this is just simple linear regression in log-space, no specialized solver needed.</p>
+
+      <div class="pipelineDiagram">
+        <div class="pipeStep">Race Results</div>
+        <div class="pipeArrow">↓</div>
+        <div class="pipeStep">Feature Engineering</div>
+        <div class="pipeArrow">↓</div>
+        <div class="pipeStep">Regression</div>
+        <div class="pipeArrow">↓</div>
+        <div class="pipeStep">Prediction</div>
+        <div class="pipeArrow">↓</div>
+        <div class="pipeStep">Current Fitness Adjustment</div>
+        <div class="pipeArrow">↓</div>
+        <div class="pipeStep pipeStepFinal">Estimated Time</div>
+      </div>
+
+      <div class="mlCodeBlock"><pre>b, logA = ordinary_least_squares(log(distance_km), log(time_s))
+curve(d) = exp(logA) * d ** b
+form_factor = clamp(recent_45d_avg_pace / alltime_avg_pace, 0.92, 1.08)
+reality_margin(d) = 0.02 to 0.08, scaled by distance (5K -> marathon)
+prediction(d) = curve(d) * form_factor * (1 + reality_margin(d))</pre></div>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Model Assumptions</div>
+      <ul class="mlLimitList">
+        <li>Performance follows a power-law relationship with distance.</li>
+        <li>Recent training pace reflects current fitness.</li>
+        <li>Personal bests represent maximal effort.</li>
+        <li>Future conditions are comparable to historical races.</li>
+      </ul>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Results</div>
+      <div class="mlModelTags" style="margin-bottom:14px;"><span>Computed in Python (numpy + scikit-learn)</span></div>
+      <div class="prRow" id="racePredRow"></div>
+      <p class="progNote" id="racePredNote"></p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Interpretation</div>
+      <p class="mlExplain">Each estimate is a single most-likely finish time, not a guarantee — think of it as "if I raced this distance under conditions similar to my recent training and past races, this is roughly what I'd expect." The gap between adjacent distances also tells a story: a wider-than-usual jump from 10K to Half Marathon, for instance, would suggest my endurance drops off faster than my raw speed does, which is useful information on its own, independent of any single number's accuracy.</p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Model Evaluation</div>
+      <div class="mlEvalGrid" id="raceEvalGrid"></div>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Limitations</div>
+      <ul class="mlLimitList">
+        <li>Doesn't consider weather</li>
+        <li>Doesn't consider elevation</li>
+        <li>Doesn't consider nutrition</li>
+        <li>Doesn't consider race strategy</li>
+      </ul>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Why Not Deep Learning?</div>
+      <p class="mlExplain">Although neural networks are popular, they would be inappropriate for this problem. With only a handful of race performances, a simple interpretable regression model is both more robust and easier to explain. Choosing the simplest model that adequately solves the problem is a core principle of statistical modeling.</p>
+    </div>
+
+    <div class="mlPhase">
+      <div class="mlPhaseLabel">Future Improvements</div>
+      <div class="roadmapGrid">
+        <div class="roadmapVersion">
+          <div class="roadmapTag">v1.1</div>
+          <ul class="roadmapList"><li>✓ Heart Rate</li><li>✓ Elevation</li></ul>
+        </div>
+        <div class="roadmapVersion">
+          <div class="roadmapTag">v1.2</div>
+          <ul class="roadmapList"><li>✓ Weather</li><li>✓ Temperature</li></ul>
+        </div>
+        <div class="roadmapVersion">
+          <div class="roadmapTag">v1.3</div>
+          <ul class="roadmapList"><li>✓ Confidence Intervals</li><li>✓ Bayesian Prediction</li></ul>
+        </div>
+        <div class="roadmapVersion">
+          <div class="roadmapTag">v2.0</div>
+          <ul class="roadmapList"><li>✓ Gradient Boosting</li><li>✓ Personal Training Load</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mlImpact">
+      <div class="mlImpactLabel">Business Impact</div>
+      <p>Helps runners make more informed training and racing decisions by transforming historical performance data into personalized race predictions. Instead of relying on generic formulas, the model adapts to the athlete's own endurance profile, supporting realistic goal setting and long-term performance monitoring.</p>
+    </div>
+
+    <div class="mlImpact">
+      <div class="mlImpactLabel">Lessons Learned</div>
+      <p>Building this model reinforced an important principle in data science: the most complex solution is not always the best one. For small, well-understood datasets, an interpretable statistical model can outperform more sophisticated machine learning approaches while remaining easier to validate, explain, and improve over time.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Live data via <a href="https://www.strava.com" target="_blank">Strava</a>. See this project's <code>README.md</code> to set up your own API key and deploy.</p>
+  </footer>
+
+</div>
+
+<script src="theme.js?v=7"></script>
+<script src="ml-page.js?v=8"></script>
+</body>
+</html>

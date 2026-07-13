@@ -1,0 +1,28 @@
+{
+  "_comment": "Recordes vitalícios reais, copiados de strava.com -> perfil -> Melhores marcas em 2026-07-03. A API do Strava não expõe esse agregado, só best_efforts por atividade — então usamos isso como base e só sobrescrevemos se uma corrida recente bater um tempo melhor (PR novo de verdade). Atualize manualmente se quiser resincronizar com a página do Strava.",
+  "seconds": {
+    "400m": 77,
+    "1/2 mile": 178,
+    "1k": 223,
+    "1 mile": 366,
+    "2 mile": 758,
+    "5k": 1183,
+    "10k": 2501,
+    "15k": 3757,
+    "10 mile": 4033,
+    "20k": 5007,
+    "Half-Marathon": 5285,
+    "30k": 8296,
+    "Marathon": 11729
+  },
+  "_stats_comment": "Estatísticas completas da atividade que gerou cada recorde, copiadas dos cartões de compartilhamento do Strava (a API não expõe isso de forma agregada/histórica). Como 10k/15k/10 milhas/meia foram batidos na mesma prova, e 30k/maratona na mesma prova, compartilham os mesmos números. Vão ser SUBSTITUÍDOS automaticamente se um novo PR acontecer dentro da janela de varredura do api/prs.js.",
+  "stats": {
+    "5k": { "eventName": "5K Time Trial", "date": "2026-05-28", "locationName": "São Paulo", "distanceKm": 5.01, "movingTimeS": 1185, "elevationM": 12, "calories": 303, "avgHr": 180 },
+    "10k": { "eventName": "Meia de Sampa", "date": "2025-11-16", "locationName": "São Paulo", "distanceKm": 21.15, "movingTimeS": 5301, "elevationM": 26, "calories": 1292, "avgHr": 178 },
+    "15k": { "eventName": "Meia de Sampa", "date": "2025-11-16", "locationName": "São Paulo", "distanceKm": 21.15, "movingTimeS": 5301, "elevationM": 26, "calories": 1292, "avgHr": 178 },
+    "10 mile": { "eventName": "Meia de Sampa", "date": "2025-11-16", "locationName": "São Paulo", "distanceKm": 21.15, "movingTimeS": 5301, "elevationM": 26, "calories": 1292, "avgHr": 178 },
+    "Half-Marathon": { "eventName": "Meia de Sampa", "date": "2025-11-16", "locationName": "São Paulo", "distanceKm": 21.15, "movingTimeS": 5301, "elevationM": 26, "calories": 1292, "avgHr": 178 },
+    "30k": { "eventName": "MDR - 2025 (Maratona do Rio)", "date": "2025-06-22", "locationName": "Rio de Janeiro", "distanceKm": 42.68, "movingTimeS": 11898, "elevationM": 87, "calories": 2693, "avgHr": 174 },
+    "Marathon": { "eventName": "MDR - 2025 (Maratona do Rio)", "date": "2025-06-22", "locationName": "Rio de Janeiro", "distanceKm": 42.68, "movingTimeS": 11898, "elevationM": 87, "calories": 2693, "avgHr": 174 }
+  }
+}

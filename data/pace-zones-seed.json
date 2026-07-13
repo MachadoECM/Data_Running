@@ -1,0 +1,11 @@
+{
+  "_comment": "Zonas de pace (velocidade, m/s) da sua conta Strava, baseadas no seu tempo de meia maratona. A API pública do Strava não expõe zonas de corrida (só heart_rate e power) — por isso são seedadas aqui, mesma lógica do prs-seed.json. Atualize manualmente se sua meia maratona de referência mudar.",
+  "speedZones": [
+    { "min": 0,     "max": 3.173 },
+    { "min": 3.173, "max": 3.686 },
+    { "min": 3.686, "max": 4.106 },
+    { "min": 4.106, "max": 4.386 },
+    { "min": 4.386, "max": 4.666 },
+    { "min": 4.666, "max": null  }
+  ]
+}
